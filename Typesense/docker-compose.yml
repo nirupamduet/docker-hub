@@ -1,0 +1,11 @@
+version: '1'
+
+services:
+  typesense:
+    image: typesense/typesense:26.0
+    entrypoint: sh -c "/opt/typesense-server --data-dir /data --api-key=WwL1Z4cr04BAe0wJ1FEF8yGxoA7lnB3rk6EG46eW --enable-cors"
+    restart: on-failure
+    ports:
+      - "8108:8108"
+    volumes:
+      - E:/DockerDesktop/Typesense/Data:/data
