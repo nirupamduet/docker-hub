@@ -7,5 +7,5 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - E:/DockerDesktop/Redis/Data:/data
+      - E:/docker-hub/Redis/Data:/data
     command: redis-server --appendonly yes

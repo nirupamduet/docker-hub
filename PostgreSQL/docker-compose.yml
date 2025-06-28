@@ -1,0 +1,14 @@
+version: '3.8'  # Updated to a modern version
+
+services:
+  postgres:
+    image: postgres:15  # You can use another version if needed
+    restart: on-failure
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: 123456789
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - E:/docker-hub/PostgreSQL/Data:/var/lib/postgresql/data

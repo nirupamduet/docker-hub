@@ -8,4 +8,4 @@ services:
     ports:
       - "8108:8108"
     volumes:
-      - E:/DockerDesktop/Typesense/Data:/data
+      - E:/docker-hub/Typesense/Data:/data
