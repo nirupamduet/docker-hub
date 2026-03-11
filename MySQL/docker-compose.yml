@@ -10,4 +10,4 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - E:/docker-hub/MySQL/Data:/var/lib/mysql
+      - D:/docker-hub/MySQL/Data:/var/lib/mysql

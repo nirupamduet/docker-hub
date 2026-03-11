@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  oracle-db:
+    image: doctorkirk/oracle-19c
+    container_name: oracle-19c
+    restart: always
+    ports:
+      - "1521:1521"   # Oracle Listener
+      - "5500:5500"   # Enterprise Manager (if enabled)
+    environment:
+      - ORACLE_SID=ORCLCDB
+      - ORACLE_PDB=ORCLPDB1
+      - ORACLE_PWD=Oracle123
+    volumes:
+      - D:/docker-hub/Oracle19c/Data:/opt/oracle/oradata

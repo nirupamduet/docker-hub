@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  ubuntu-server:
+    image: ubuntu:22.04
+    container_name: ubuntu-server
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    volumes:
+      - ./publish:/app          # Mount your .NET publish output
+    working_dir: /app           # Set working directory
+    command: /bin/bash          # Start bash so you can run manually
