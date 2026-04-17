@@ -10,7 +10,7 @@ services:
       - "5500:5500"   # Enterprise Manager (if enabled)
     environment:
       - ORACLE_SID=ORCLCDB
-      - ORACLE_PDB=ORCLPDB1
+      - ORACLE_PDB=PDBESSP
       - ORACLE_PWD=Oracle123
     volumes:
       - D:/docker-hub/Oracle19c/Data:/opt/oracle/oradata
