@@ -1,15 +1,34 @@
-version: '3.8'
+version: "3.9"
 
 services:
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    container_name: sqlserver-2019
-    restart: always
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql-server
+    restart: unless-stopped
+
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=123456789
-      - MSSQL_PID=Standard
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "YourStrong!Passw0rd"
+      MSSQL_PID: "Developer"
+
     ports:
       - "1433:1433"
+
     volumes:
-      - E:/docker-hub/MSSQL2019/Data:/var/opt/mssql
+      # Bind mount to local Windows folders
+      - ./data:/var/opt/mssql/data
+      - ./log:/var/opt/mssql/log
+      - ./backup:/var/opt/mssql/backup
+
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 8G
+
+    networks:
+      - mssql_net
+
+networks:
+  mssql_net:
+    driver: bridge
