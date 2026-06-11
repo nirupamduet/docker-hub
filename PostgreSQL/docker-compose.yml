@@ -1,8 +1,6 @@
-version: '3.8'  # Updated to a modern version
-
 services:
   postgres:
-    image: postgres:15  # You can use another version if needed
+    image: postgres:18-alpine
     restart: on-failure
     environment:
       POSTGRES_USER: user
@@ -11,4 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - E:/docker-hub/PostgreSQL/Data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
+
+volumes:
+  pgdata:
