@@ -32,7 +32,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./PostgreSQL/Data:/var/lib/postgresql/data
+      - ./PostgreSQL/Data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
       interval: 10s
@@ -47,7 +47,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - redisdata:/data
+      - ./Redis/Data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -66,7 +66,7 @@ services:
       - "5672:5672"
       - "15672:15672"
     volumes:
-      - D:/docker-hub/rabbitMQ/Data:/var/lib/rabbitmq
+      - ./rabbitMQ/Data:/var/lib/rabbitmq
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 10s
@@ -84,7 +84,7 @@ services:
     ports:
       - "8108:8108"
     volumes:
-      - typesensedata:/data
+      - ./Typesense/Data:/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8108/health"]
       interval: 10s
@@ -94,10 +94,7 @@ services:
       - othoba_network
 
 volumes:
-  pgdata:
   redisdata:
-  rabbitmqdata:
-  typesensedata:
 
 networks:
   othoba_network:
