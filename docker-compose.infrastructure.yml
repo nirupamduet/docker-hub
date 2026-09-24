@@ -1,0 +1,102 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: on-failure
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: 123456789
+      POSTGRES_DB: othoba_log
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d othoba_log"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - othoba_network
+
+  redis:
+    image: redis:7-alpine
+    restart: on-failure
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - othoba_network
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    restart: on-failure
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmqdata:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - othoba_network
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: on-failure
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: ${MSSQL_SA_PASSWORD:-YourStrong!Passw0rd}
+      MSSQL_PID: Express
+    ports:
+      - "0.0.0.0:1433:1433"
+    volumes:
+      - mssqldata:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${MSSQL_SA_PASSWORD:-YourStrong!Passw0rd}", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - othoba_network
+
+  typesense:
+    image: typesense/typesense:26.0
+    restart: on-failure
+    environment:
+      TYPESENSE_API_KEY: ${TYPESENSE_API_KEY:-xyz123456789}
+      TYPESENSE_DATA_DIR: /data
+    ports:
+      - "0.0.0.0:8108:8108"
+    volumes:
+      - typesensedata:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8108/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - othoba_network
+
+volumes:
+  pgdata:
+  redisdata:
+  rabbitmqdata:
+  mssqldata:
+  typesensedata:
+
+networks:
+  othoba_network:
+    name: othoba_network
+    driver: bridge
