@@ -1,17 +1,40 @@
 services:
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "YourStrong!Passw0rd"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes:
+      # Bind mount to local Windows folders
+      - ./mssql/data:/var/opt/mssql/data
+      - ./mssql/log:/var/opt/mssql/log
+      - ./mssql/backup:/var/opt/mssql/backup
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${MSSQL_SA_PASSWORD:-YourStrong!Passw0rd}", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - othoba_network
+      
   postgres:
     image: postgres:18-alpine
     restart: on-failure
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: 123456789
-      POSTGRES_DB: othoba_log
+      POSTGRES_DB: mydb
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql
+      - ./PostgreSQL/Data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d othoba_log"]
+      test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -37,13 +60,13 @@ services:
     image: rabbitmq:3.13-management-alpine
     restart: on-failure
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
     ports:
       - "5672:5672"
       - "15672:15672"
     volumes:
-      - rabbitmqdata:/var/lib/rabbitmq
+      - D:/docker-hub/rabbitMQ/Data:/var/lib/rabbitmq
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 10s
@@ -52,33 +75,14 @@ services:
     networks:
       - othoba_network
 
-  mssql:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    restart: on-failure
-    environment:
-      ACCEPT_EULA: Y
-      SA_PASSWORD: ${MSSQL_SA_PASSWORD:-YourStrong!Passw0rd}
-      MSSQL_PID: Express
-    ports:
-      - "0.0.0.0:1433:1433"
-    volumes:
-      - mssqldata:/var/opt/mssql
-    healthcheck:
-      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${MSSQL_SA_PASSWORD:-YourStrong!Passw0rd}", "-Q", "SELECT 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - othoba_network
+
 
   typesense:
     image: typesense/typesense:26.0
+    entrypoint: sh -c "/opt/typesense-server --data-dir /data --api-key=WwL1Z4cr04BAe0wJ1FEF8yGxoA7lnB3rk6EG46eW --enable-cors"
     restart: on-failure
-    environment:
-      TYPESENSE_API_KEY: ${TYPESENSE_API_KEY:-xyz123456789}
-      TYPESENSE_DATA_DIR: /data
     ports:
-      - "0.0.0.0:8108:8108"
+      - "8108:8108"
     volumes:
       - typesensedata:/data
     healthcheck:
@@ -98,5 +102,4 @@ volumes:
 
 networks:
   othoba_network:
-    name: othoba_network
-    driver: bridge
+    external: true
