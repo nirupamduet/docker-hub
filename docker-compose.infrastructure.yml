@@ -1,6 +1,7 @@
 services:
-
+  
   mssql:
+    container_name: mssql
     image: mcr.microsoft.com/mssql/server:2022-latest
     restart: unless-stopped
     environment:
@@ -23,18 +24,19 @@ services:
       - othoba_network
       
   postgres:
+    container_name: postgres
     image: postgres:18-alpine
     restart: on-failure
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: 123456789
-      POSTGRES_DB: mydb
+      POSTGRES_DB: othoba_log
     ports:
       - "5432:5432"
     volumes:
       - ./PostgreSQL/Data:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
+      test: ["CMD-SHELL", "pg_isready -U user -d othoba_log"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -42,6 +44,7 @@ services:
       - othoba_network
 
   redis:
+    container_name: redis
     image: redis:7-alpine
     restart: on-failure
     ports:
@@ -57,6 +60,7 @@ services:
       - othoba_network
 
   rabbitmq:
+    container_name: rabbitmq
     image: rabbitmq:3.13-management-alpine
     restart: on-failure
     environment:
@@ -78,6 +82,7 @@ services:
 
 
   typesense:
+    container_name: typesense
     image: typesense/typesense:26.0
     entrypoint: sh -c "/opt/typesense-server --data-dir /data --api-key=WwL1Z4cr04BAe0wJ1FEF8yGxoA7lnB3rk6EG46eW --enable-cors"
     restart: on-failure
